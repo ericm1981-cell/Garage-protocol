@@ -137,12 +137,20 @@
     <div class="movement"><div class="movement-name" style="color:var(--green)">WHOOP governs intensity</div><div class="movement-note">🟢 67%+ full effort · 🟡 34–66% at 80% · 🔴 &lt;33% warm-up only, 10 min, go home.</div></div>
   </div></div>
 
-  <div class="section-label">8-Week Progression</div>
+  <div class="section-label">The Strength Build — % Based</div>
   <div class="card"><div class="card-body open" style="display:block">
-    <div class="movement"><div class="movement-name">Weeks 1–2</div><div class="movement-note">Find working weights. Form over load. Complete every session. Learn the bike pace.</div></div>
-    <div class="movement"><div class="movement-name">Weeks 3–4</div><div class="movement-note">Add load. Main lifts heavy by set four. Zone 2 should be 15+ min per session.</div></div>
-    <div class="movement"><div class="movement-name">Weeks 5–6</div><div class="movement-note">Beat week 1–2 WOD scores. Lifts meaningfully heavier. Zone 2 at 20+ min.</div></div>
-    <div class="movement"><div class="movement-name">Weeks 7–8</div><div class="movement-note">Full intensity. Week 8 retests week 1 WODs — that's the proof.</div></div>
+    <div class="movement"><div class="movement-name" style="color:var(--purple)">Week 1 — TEST</div><div class="movement-note">Work up to a heavy 5-rep max on Deadlift, Back Squat, Strict Press. Enter each in the lift card. Every future week calculates off these numbers.</div></div>
+    <div class="movement"><div class="movement-name">Weeks 2–4 — VOLUME</div><div class="movement-note">75% → 80% → 85% of your 5RM. Build the base with clean sets. 5x5 then 4x4.</div></div>
+    <div class="movement"><div class="movement-name">Week 5 — DELOAD</div><div class="movement-note">65%. Deliberate recovery. Move fast and easy so you can build again heavier.</div></div>
+    <div class="movement"><div class="movement-name">Weeks 6–7 — INTENSITY / PEAK</div><div class="movement-note">88% triples, then build to a heavy double at ~92%. Strength gets expressed.</div></div>
+    <div class="movement"><div class="movement-name" style="color:var(--green)">Week 8 — RETEST</div><div class="movement-note">Find a NEW 5-rep max. Beat week 1. That number seeds your next 8-week block.</div></div>
+  </div></div>
+
+  <div class="section-label">Each Session Has</div>
+  <div class="card"><div class="card-body open" style="display:block">
+    <div class="movement"><div class="movement-name">1 — Primary lift</div><div class="movement-note">Auto-calculated target weight × sets from your tested max. This is the money work.</div></div>
+    <div class="movement"><div class="movement-name">2 — Accessory lift</div><div class="movement-note">Supports the primary — RDL, split squat, or weighted pull-up. Moderate, leave reps in the tank.</div></div>
+    <div class="movement"><div class="movement-name">3 — CrossFit WOD</div><div class="movement-note">Real metcons — benchmarks, barbell cycling, gymnastics skill, bike for Zone 2.</div></div>
   </div></div>
 </div>
 
@@ -174,27 +182,29 @@ const DAYS=[
 ];
 
 const LIFTS={
- sat:[
-  {name:'Deadlift',sets:'4x5',note:'Bar over mid-foot. Chest up, lats tight. Push the floor away. Add 5lbs when all 4 sets clean.'},
-  {name:'Romanian Deadlift',sets:'4x8',note:'Hips back, soft knee, bar close to legs. Feel the hamstring stretch. Never round the low back.'},
-  {name:'Hang Power Clean',sets:'5x3',note:'Bar from hang above knee. Violent hip extension. Elbows fast. Catch in quarter squat. Speed is the load.'},
- ],
- sun:[
-  {name:'Back Squat',sets:'4x5',note:'Depth below parallel. Drive knees out. Add 5lbs weekly if all sets clean.'},
-  {name:'Front Squat',sets:'4x5',note:'Elbows HIGH. Upright torso. Roughly 75-80% of your back squat.'},
-  {name:'Clean and Jerk',sets:'5x2',note:'Full clean to front rack. Dip-drive-dip. Never rush the clean to get to the jerk.'},
- ],
- mon:[
-  {name:'Strict Press',sets:'4x5',note:'No leg drive. Squeeze glutes and abs. Bar in a straight line. Hardest press to add weight to.'},
-  {name:'Push Press',sets:'4x5',note:'Small dip, violent leg drive, lockout overhead. More weight than strict press.'},
-  {name:'Power Snatch',sets:'5x2',note:'Wide grip. Explosive pull. Punch up and out. Catch overhead locked. Start light, master the catch.'},
- ],
+ sat:{
+   primary:{name:'Deadlift',test:'5RM',note:'The hinge anchor. Tested week 1, built on %, retested week 8. Bar over mid-foot, chest up, push the floor away.'},
+   accessory:{name:'Romanian Deadlift',scheme:'3x8',note:'After the main work. Hips back, soft knee, bar close. Hamstring builder. Moderate — leave 2 reps in the tank.'}
+ },
+ sun:{
+   primary:{name:'Back Squat',test:'5RM',note:'The squat anchor. Depth below parallel, knees out. Built on % across the block.'},
+   accessory:{name:'Bulgarian Split Squat',scheme:'3x8 (ea leg)',note:'Rear foot elevated. Unilateral — fixes imbalances the barbell hides. DBs in hands.'}
+ },
+ mon:{
+   primary:{name:'Strict Press',test:'5RM',note:'The press anchor. No leg drive. Slowest lift to progress, so the gains are the most real.'},
+   accessory:{name:'Weighted Pull-up',scheme:'4x6',note:'Balances all the pressing. Add load once bodyweight 6s are easy. Full hang to chin over bar.'}
+ },
 };
 
-// week -> lift index per day (rotates so nothing repeats back to back)
-const ROT={
- 1:{sat:0,sun:1,mon:0}, 2:{sat:1,sun:0,mon:1}, 3:{sat:2,sun:1,mon:0}, 4:{sat:0,sun:2,mon:1},
- 5:{sat:1,sun:0,mon:2}, 6:{sat:2,sun:1,mon:0}, 7:{sat:0,sun:2,mon:1}, 8:{sat:1,sun:0,mon:0},
+const BUILD={
+ 1:{label:'TEST',scheme:'Work up to a heavy 5',pct:null,sets:'Build to 5RM',cue:'Warm up in jumps of ~20lbs. Find a hard-but-clean 5-rep max. Enter it below — every future week builds off this number.'},
+ 2:{label:'VOLUME',scheme:'5 sets x 5',pct:0.75,sets:'5x5',cue:'75% of 5RM. Sub-maximal, crisp reps. Building the base.'},
+ 3:{label:'VOLUME',scheme:'5 sets x 5',pct:0.80,sets:'5x5',cue:'80%. Same volume, more load. Should feel moderate by set 4.'},
+ 4:{label:'VOLUME+',scheme:'4 sets x 4',pct:0.85,sets:'4x4',cue:'85%. Fewer reps, heavier. Last set is challenging.'},
+ 5:{label:'DELOAD',scheme:'3 sets x 5',pct:0.65,sets:'3x5',cue:'65% — deliberate deload. Move fast and easy. Recover to build again.'},
+ 6:{label:'INTENSITY',scheme:'5 sets x 3',pct:0.88,sets:'5x3',cue:'88%. Heavy triples. This is where strength is expressed.'},
+ 7:{label:'PEAK',scheme:'Work to heavy 2',pct:0.92,sets:'Build to 2',cue:'~92%+. Build to a heavy double. Priming the nervous system for retest.'},
+ 8:{label:'RETEST',scheme:'Work up to a new 5RM',pct:null,sets:'New 5RM',cue:'Retest. Find a new heavy 5. This is the proof. Beat week 1 and it seeds your next block.'},
 };
 
 // icon type helper: b=bike, l=lift, w=bodyweight, r=rest
@@ -202,92 +212,92 @@ function mv(t,txt){return {t:t,txt:txt}}
 
 const WODS={
  1:{
-  sat:{title:'Push-Up Squat Engine',fmt:'25 min AMRAP',z2:'~15 min',
-   flow:[mv('b','15 cal bike — Zone 2'),mv('w','12 Push-ups'),mv('l','12 Goblet Squats'),mv('b','15 cal bike — Zone 2'),mv('w','12 Box Step-Ups (6 ea)'),mv('l','10 DB Walking Lunges')],
-   score:'rounds + reps',note:'Hinge rests after deadlifts. No overhead — Monday presses. Bike conversational.'},
-  sun:{title:'Pull Chase',fmt:'25 min AMRAP',z2:'~15 min',
-   flow:[mv('b','15 cal bike — Zone 2'),mv('w','8 Pull-ups'),mv('b','15 cal bike — Zone 2'),mv('l','12 DB Bent Row'),mv('b','15 cal bike — Zone 2'),mv('w','20 Jump Rope singles')],
-   score:'rounds + reps',note:'No squat after squats, no press before Monday. Break pull-ups from round 1.'},
-  mon:{title:'Hinge + Pull Engine',fmt:'24 min — E4MOM x6',z2:'~12 min',
-   flow:[mv('b','12 cal bike — Zone 2'),mv('l','10 KB Swings'),mv('w','6 Pull-ups'),mv('r','Rest remainder of the 4 min')],
-   score:'rounds unbroken + weight',note:'No pressing after strict press. Rest windows keep the bike honest.'},
+  sat:{title:'\'Helen\' Variant',fmt:'3 RFT',z2:'~12 min',
+   flow:[mv('b','20 cal bike'),mv('w','21 KB Swings'),mv('w','12 Pull-ups')],
+   score:'time',note:'Classic triplet. Bike replaces the run. Sub for Helen — fast and stinging.'},
+  sun:{title:'Double-Under Skill + Snatch',fmt:'5 RFT',z2:'~12 min',
+   flow:[mv('w','40 Double-Unders'),mv('l','5 Power Snatches (moderate)'),mv('w','10 Toes-to-Bar')],
+   score:'time + weight',note:'Snatch at metcon load — touch-and-go if you can. Scale DUs to 60 singles, T2B to knee raises.'},
+  mon:{title:'Wall Walk + Hinge Engine',fmt:'AMRAP 16',z2:'~10 min',
+   flow:[mv('w','2 Wall Walks'),mv('l','10 DB Hang Power Cleans'),mv('b','15 cal bike'),mv('w','15 Sit-ups')],
+   score:'rounds + reps',note:'Wall walks first while fresh. Scale to inchworm-to-wall or pike hold.'},
  },
  2:{
-  sat:{title:'Squat + Carry Ladder',fmt:'26 min AMRAP',z2:'~16 min',
-   flow:[mv('b','15 cal bike — Zone 2'),mv('l','10 Goblet Squats'),mv('l','Farmer Carry — length x2'),mv('w','10 Box Jumps'),mv('r','Drop 1 squat rep each round')],
-   score:'rounds deep',note:'Squat + carry + jump. No hinge, no overhead. Reps descend 10-9-8...'},
-  sun:{title:'The Long Pull',fmt:'30 min AMRAP',z2:'~20 min',
-   flow:[mv('b','20 cal bike — Zone 2'),mv('w','10 Pull-ups'),mv('b','20 cal bike — Zone 2'),mv('l','12 DB Single-Arm Row'),mv('b','20 cal bike — Zone 2'),mv('w','30 sec Plank')],
-   score:'rounds + reps',note:'Your aerobic day — biggest bike volume. Pull-dominant, shoulders fresh for Monday.'},
-  mon:{title:'Swing + Row Chipper',fmt:'5 rounds for time',z2:'~12 min',
-   flow:[mv('b','15 cal bike — Zone 2'),mv('l','15 KB Swings'),mv('l','10 DB Renegade Row'),mv('w','10 Box Step-Ups (5 ea)')],
-   score:'total time + weight',note:'Hinge + pull + core. Grip-heavy. No pressing.'},
+  sat:{title:'\'DT\' Style',fmt:'5 RFT',z2:'~14 min',
+   flow:[mv('l','12 Deadlifts (moderate)'),mv('l','9 Hang Power Cleans'),mv('l','6 Push Jerks'),mv('b','10 cal bike')],
+   score:'time + weight',note:'Benchmark barbell cycling. One bar, unbroken if you can. Classic Hero WOD structure.'},
+  sun:{title:'HSPU + Squat Clean Ladder',fmt:'For time',z2:'~10 min',
+   flow:[mv('w','Handstand Push-ups: 1-2-3-4-5'),mv('l','Squat Cleans: 1-2-3-4-5'),mv('b','15 cal bike between rounds')],
+   score:'time + weight',note:'Skill + barbell. Scale HSPU to pike push-ups or DB Z-press. Ascending ladder.'},
+  mon:{title:'\'Cindy\' + Bike',fmt:'AMRAP 20',z2:'~14 min',
+   flow:[mv('w','5 Pull-ups'),mv('w','10 Push-ups'),mv('w','15 Air Squats'),mv('b','Every 5 min: 15 cal bike')],
+   score:'rounds',note:'The Cindy benchmark with a bike buy-in every 5 min for Zone 2. Compare rounds over time.'},
  },
  3:{
-  sat:{title:'Bike Intervals + Push-Ups',fmt:'6 rounds',z2:'~22 min',
-   flow:[mv('b','3 min bike @ Zone 2'),mv('w','12 Push-ups'),mv('l','10 DB Front-Racked Squats'),mv('r','Rest 30 sec')],
-   score:'total time + weight',note:'Longest Zone 2 blocks. 3-min bike intervals. Push is horizontal — Monday overhead stays fresh.'},
-  sun:{title:'Pull Ladder',fmt:'25 min AMRAP',z2:'~14 min',
-   flow:[mv('b','15 cal bike — Zone 2'),mv('w','Pull-ups: 5-6-7-8… add 1 each round'),mv('l','10 DB High Pull'),mv('w','30 Jump Rope')],
-   score:'highest pull-up round reached',note:'Pulling volume climbs each round. No squat, no press.'},
-  mon:{title:'Hinge Chipper',fmt:'For time',z2:'~10 min',
-   flow:[mv('b','30 cal bike — Zone 2'),mv('l','30 KB Swings'),mv('b','20 cal bike — Zone 2'),mv('l','20 DB Deadlifts'),mv('b','10 cal bike — Zone 2'),mv('w','10 Pull-ups')],
-   score:'total time',note:'Descending chipper — hinge + pull. No pressing.'},
+  sat:{title:'Snatch + Burpee Sprint',fmt:'21-15-9',z2:'~10 min',
+   flow:[mv('l','Power Snatch'),mv('w','Bar-Facing Burpees'),mv('b','cap each round w/ 10 cal bike')],
+   score:'time + weight',note:'Classic couplet rep scheme. Snatch light and fast. Burpees over the bar.'},
+  sun:{title:'Wall Walk + Pistol Skill',fmt:'AMRAP 15',z2:'~10 min',
+   flow:[mv('w','3 Wall Walks'),mv('w','10 Pistols (5 ea, scale to box)'),mv('w','20 Double-Unders'),mv('b','12 cal bike')],
+   score:'rounds',note:'Gymnastics skill focus. Pistols to a box if needed. Wall walks to build to HSPU.'},
+  mon:{title:'\'Grace\' Variant',fmt:'30 Clean & Jerks for time',z2:'~8 min',
+   flow:[mv('l','30 Clean & Jerks (moderate)'),mv('b','then 30 cal bike Zone 2')],
+   score:'time + weight',note:'The Grace benchmark. 30 C&J as fast as form allows, then flush with Zone 2 bike.'},
  },
  4:{
-  sat:{title:'Lunge + Jump Volume',fmt:'28 min AMRAP',z2:'~18 min',
-   flow:[mv('b','18 cal bike — Zone 2'),mv('l','10 DB Walking Lunges'),mv('w','10 Box Jumps'),mv('l','10 Cossack Squats'),mv('w','15 Hollow Hold sec')],
-   score:'rounds + reps',note:'Legs + core + engine. No hinge, no overhead. Higher bike volume per round.'},
-  sun:{title:'Pull Pyramid',fmt:'For time',z2:'~14 min',
-   flow:[mv('b','15 cal bike — Zone 2'),mv('w','3-6-9-12-9-6-3 Pull-ups'),mv('l','Matching DB Bent Row each round'),mv('b','15 cal bike — Zone 2')],
-   score:'total time',note:'Climbs then descends. Bike between sets. Pull only — shoulders rest for Monday.'},
-  mon:{title:'Hinge Engine E3MOM',fmt:'30 min — E3MOM x10',z2:'~16 min',
-   flow:[mv('b','12 cal bike — Zone 2'),mv('l','12 KB Swings'),mv('w','8 Hanging Knee Raises'),mv('r','Rest remainder of 3 min')],
-   score:'rounds unbroken',note:'Ten rounds hinge + core. If you finish with 60+ sec left, add weight.'},
+  sat:{title:'\'Fran\' Style',fmt:'21-15-9',z2:'~8 min',
+   flow:[mv('l','DB Thrusters'),mv('w','Pull-ups'),mv('b','10 cal bike buy-out')],
+   score:'time + weight',note:'The most famous benchmark. Thrusters + pull-ups. Go hard — it\'s short.'},
+  sun:{title:'HSPU + Squat Clean Chipper',fmt:'For time',z2:'~12 min',
+   flow:[mv('b','20 cal bike'),mv('w','15 Handstand Push-ups'),mv('l','15 Squat Cleans'),mv('w','15 Toes-to-Bar'),mv('b','20 cal bike')],
+   score:'time + weight',note:'Chipper — one trip through. Scale HSPU and T2B. Bike bookends for Zone 2.'},
+  mon:{title:'Double-Under + Snatch Engine',fmt:'EMOM 18',z2:'~12 min',
+   flow:[mv('w','Min 1: 40 Double-Unders'),mv('l','Min 2: 6 Power Snatches'),mv('b','Min 3: 12 cal bike')],
+   score:'rounds held + weight',note:'6 rounds. Steady EMOM engine. Fall off = your score. Snatch stays crisp.'},
  },
  5:{
-  sat:{title:'Long Bike + Squat',fmt:'32 min',z2:'~24 min',
-   flow:[mv('b','5 min bike @ Zone 2'),mv('l','15 Goblet Squats'),mv('b','5 min bike @ Zone 2'),mv('w','15 Push-ups'),mv('b','5 min bike @ Zone 2'),mv('w','15 Box Step-Ups')],
-   score:'completed y/n + weight',note:'Biggest Zone 2 day of the program. Three 5-min blocks. No hinge, no overhead.'},
-  sun:{title:'Pull Density',fmt:'20 min AMRAP',z2:'~12 min',
-   flow:[mv('b','12 cal bike — Zone 2'),mv('w','Max unbroken Pull-ups'),mv('l','10 DB Single-Arm Row'),mv('r','Score = total pull-ups')],
-   score:'total pull-ups',note:'Every round to just before failure on pull-ups. No press.'},
-  mon:{title:'Swing Ladder',fmt:'For time',z2:'~12 min',
-   flow:[mv('b','15 cal bike — Zone 2'),mv('l','KB Swings: 21-15-9'),mv('l','DB Deadlifts: 21-15-9'),mv('b','15 cal bike — Zone 2')],
-   score:'total time + weight',note:'Hinge focus, classic rep scheme, bike keeps aerobic time up.'},
+  sat:{title:'\'Diane\' Style',fmt:'21-15-9',z2:'~10 min',
+   flow:[mv('l','Deadlifts (moderate-heavy)'),mv('w','Handstand Push-ups'),mv('b','10 cal bike each round')],
+   score:'time + weight',note:'Benchmark couplet. Deadlift + HSPU. Scale HSPU to pike or DB push press.'},
+  sun:{title:'Squat Clean + Wall Walk Ladder',fmt:'For time',z2:'~12 min',
+   flow:[mv('w','Wall Walks: 1-2-3-4-5'),mv('l','Squat Cleans: 3-6-9-12-15'),mv('b','15 cal bike between')],
+   score:'time + weight',note:'Ascending both. Wall walks build the overhead/midline. Bike keeps HR in Zone 2.'},
+  mon:{title:'\'Annie\' + Bike',fmt:'50-40-30-20-10',z2:'~12 min',
+   flow:[mv('w','Double-Unders'),mv('w','Sit-ups'),mv('b','after each round: 10 cal bike')],
+   score:'time',note:'The Annie benchmark. DUs + sit-ups descending. Bike between rounds for aerobic time.'},
  },
  6:{
-  sat:{title:'Squat Complex',fmt:'26 min AMRAP',z2:'~16 min',
-   flow:[mv('b','15 cal bike — Zone 2'),mv('l','8 DB Front-Racked Squats'),mv('l','8 Bulgarian Split Squats (ea)'),mv('w','12 Jump Rope doubles or 30 singles')],
-   score:'rounds + weight',note:'Squat variety, unilateral work. No hinge, no overhead.'},
-  sun:{title:'Bike-Pull Intervals',fmt:'8 rounds',z2:'~20 min',
-   flow:[mv('b','2:30 min bike @ Zone 2'),mv('w','8 Pull-ups'),mv('l','10 DB Bent Row'),mv('r','Rest 30 sec')],
-   score:'total time',note:'Eight 2:30 bike blocks = 20 min Zone 2. Pull only — Monday is press day.'},
-  mon:{title:'Hinge + Carry Chipper',fmt:'For time',z2:'~12 min',
-   flow:[mv('b','25 cal bike — Zone 2'),mv('l','25 KB Swings'),mv('l','Farmer Carry x4 lengths'),mv('b','25 cal bike — Zone 2'),mv('l','25 DB Deadlifts'),mv('w','15 Pull-ups')],
-   score:'total time',note:'Long grinder — hinge + carry + pull. No pressing.'},
+  sat:{title:'Power Snatch + Box Jump',fmt:'AMRAP 16',z2:'~12 min',
+   flow:[mv('l','5 Power Snatches'),mv('w','10 Box Jumps'),mv('b','15 cal bike'),mv('w','15 Toes-to-Bar')],
+   score:'rounds + weight',note:'Touch-and-go snatch if you can. Box jumps rebound. Bike is the breather.'},
+  sun:{title:'HSPU + Pistol Skill',fmt:'AMRAP 15',z2:'~10 min',
+   flow:[mv('w','5 Handstand Push-ups'),mv('w','10 Pistols (5 ea)'),mv('w','30 Double-Unders'),mv('b','12 cal bike')],
+   score:'rounds',note:'Pure gymnastics skill day. Both scale cleanly. Practice the hard movements while fresh.'},
+  mon:{title:'\'DT\' Heavy + Bike',fmt:'5 RFT',z2:'~14 min',
+   flow:[mv('l','12 Deadlifts'),mv('l','9 Hang Power Cleans'),mv('l','6 Push Jerks'),mv('b','12 cal bike Zone 2')],
+   score:'time + weight',note:'DT benchmark again, heavier than week 2. Compare the weight you cycled.'},
  },
  7:{
-  sat:{title:'Squat Endurance',fmt:'30 min AMRAP',z2:'~20 min',
-   flow:[mv('b','20 cal bike — Zone 2'),mv('l','10 Goblet Squats'),mv('w','10 Box Jumps'),mv('l','10 DB Walking Lunges'),mv('w','20 sec Hollow Hold')],
-   score:'rounds + reps',note:'Highest volume leg day. Pace it — 30 min is long. No hinge, no overhead.'},
-  sun:{title:'Max Pull Test',fmt:'21 min — E3MOM x7',z2:'~14 min',
-   flow:[mv('b','15 cal bike — Zone 2'),mv('w','Max unbroken Pull-ups'),mv('r','Rest remainder of 3 min')],
-   score:'total pull-ups across 7 rounds',note:'Pure pulling capacity with bike as active recovery. Compare to week 5.'},
-  mon:{title:'Hinge Engine',fmt:'5 rounds',z2:'~18 min',
-   flow:[mv('b','3 min bike @ Zone 2'),mv('l','12 KB Swings'),mv('l','12 DB Romanian Deadlifts'),mv('r','Rest 45 sec')],
-   score:'total time + weight',note:'Three-minute bike blocks. Hinge focus. Zone 2 protected.'},
+  sat:{title:'Snatch Ladder + Burpee',fmt:'On the 2:00 x 6',z2:'~12 min',
+   flow:[mv('l','3 Power Snatches (build each round)'),mv('w','6 Bar-Facing Burpees'),mv('b','rest of window: easy bike')],
+   score:'top weight + total time',note:'EMOM-style ladder. Build the snatch each round. Bike fills the rest for Zone 2.'},
+  sun:{title:'Wall Walk + Squat Clean Chipper',fmt:'For time',z2:'~12 min',
+   flow:[mv('b','20 cal bike'),mv('w','10 Wall Walks'),mv('l','20 Squat Cleans'),mv('w','30 Toes-to-Bar'),mv('b','20 cal bike')],
+   score:'time + weight',note:'Big chipper. Wall walks first. Scale volume as needed — this one\'s long.'},
+  mon:{title:'\'Grace\' + \'Isabel\' Retest',fmt:'30 C&J then 30 Snatch',z2:'~12 min',
+   flow:[mv('l','30 Clean & Jerks'),mv('b','20 cal bike'),mv('l','30 Power Snatches'),mv('b','20 cal bike Zone 2')],
+   score:'time + weight',note:'Two benchmarks back to back. Grace + Isabel. Moderate load, fast cycling.'},
  },
  8:{
-  sat:{title:'RETEST — Week 1 Saturday',fmt:'25 min AMRAP',z2:'~15 min',
-   flow:[mv('b','15 cal bike — Zone 2'),mv('w','12 Push-ups'),mv('l','12 Goblet Squats'),mv('b','15 cal bike — Zone 2'),mv('w','12 Box Step-Ups (6 ea)'),mv('l','10 DB Walking Lunges')],
-   score:'rounds + reps',note:'Same as week 1. More rounds = the protocol worked.'},
-  sun:{title:'RETEST — Week 1 Sunday',fmt:'25 min AMRAP',z2:'~15 min',
-   flow:[mv('b','15 cal bike — Zone 2'),mv('w','8 Pull-ups'),mv('b','15 cal bike — Zone 2'),mv('l','12 DB Bent Row'),mv('b','15 cal bike — Zone 2'),mv('w','20 Jump Rope singles')],
-   score:'rounds + reps',note:'Compare to week 1. Same weights. This is the proof.'},
-  mon:{title:'RETEST — Week 1 Monday',fmt:'24 min — E4MOM x6',z2:'~12 min',
-   flow:[mv('b','12 cal bike — Zone 2'),mv('l','10 KB Swings'),mv('w','6 Pull-ups'),mv('r','Rest remainder')],
-   score:'rounds unbroken + weight',note:'Heavier at same rounds = muscle preserved and built.'},
+  sat:{title:'RETEST — \'Helen\' Variant',fmt:'3 RFT',z2:'~12 min',
+   flow:[mv('b','20 cal bike'),mv('w','21 KB Swings'),mv('w','12 Pull-ups')],
+   score:'time',note:'Same as week 1. Faster time = the engine improved.'},
+  sun:{title:'RETEST — DU + Snatch',fmt:'5 RFT',z2:'~12 min',
+   flow:[mv('w','40 Double-Unders'),mv('l','5 Power Snatches'),mv('w','10 Toes-to-Bar')],
+   score:'time + weight',note:'Compare to week 1 — heavier snatch or faster time is the proof.'},
+  mon:{title:'RETEST — Wall Walk + Hinge',fmt:'AMRAP 16',z2:'~10 min',
+   flow:[mv('w','2 Wall Walks'),mv('l','10 DB Hang Power Cleans'),mv('b','15 cal bike'),mv('w','15 Sit-ups')],
+   score:'rounds + reps',note:'More rounds than week 1 = work paid off. Wall walks should feel easier.'},
  },
 };
 
@@ -323,6 +333,17 @@ const LIB={
   {name:'Strict Press',cues:'Bar from front rack. Glutes and abs tight — no back arch. Straight bar path, head through at the top. Most honest shoulder strength test.'},
  ],
  wod:[
+  {name:'Handstand Push-up (HSPU)',cues:'Kick up to a wall, hands ~shoulder width. Lower head to floor under control, press back to lockout. Scale: pike push-ups feet on box, or DB Z-press seated. Build capacity with wall-walk holds.'},
+  {name:'Wall Walk',cues:'Start prone, feet at wall. Walk hands toward wall as feet climb up. Get chest close to wall at the top, walk back down. Scale: walk only partway up. Builds the overhead strength for HSPU.'},
+  {name:'Double-Under',cues:'Rope passes twice per jump. Wrists do the work, not the arms. Jump slightly higher, stay relaxed. Scale: 2-3x singles, or practice 10 unbroken then rest. One of the best conditioning tools you own.'},
+  {name:'Power Snatch',cues:'Wide grip, bar to hip, violent extension, punch under and catch overhead in a partial squat, locked out. Then stand. In a metcon keep it light and touch-and-go. Skill under fatigue is the whole point.'},
+  {name:'Squat Clean',cues:'Pull the bar, drop UNDER into a full front squat, catch in the bottom, stand up. More efficient than power clean at heavy loads. Metcon version: moderate weight, smooth cycling. Elbows fast.'},
+  {name:'Clean & Jerk',cues:'Full clean to front rack, then dip-drive-dip under to lock overhead. The benchmark barbell movement. In Grace (30 for time) keep it moderate and breathe between reps.'},
+  {name:'DB Thruster',cues:'DBs at shoulders, full squat, drive up and press overhead in one motion. The engine of Fran. Relentless. Break into planned sets before you fail.'},
+  {name:'Toes-to-Bar',cues:'Hang from bar, kip, drive toes up to touch the bar. Scale: knees-to-elbows, or hanging knee raises. Keep a hollow-to-arch rhythm. Protect the grip — break early.'},
+  {name:'Pistol (Single-Leg Squat)',cues:'One leg extended, squat down on the other to full depth, stand. Scale: squat to a box, or hold a light DB as counterbalance. Brutal for balance and unilateral strength.'},
+  {name:'Bar-Facing Burpee',cues:'Chest to floor, jump feet in, jump laterally over the barbell, turn and repeat. The great equalizer. Steady breathing beats sprinting — never stop moving.'},
+
   {name:'Echo Bike — Zone 2',cues:'138-151 bpm. Should feel almost too easy. You must be able to hold a conversation. If breathing hard, slow down. Roughly 45-55 sec per 15 cal at this effort.'},
   {name:'KB Swing',cues:'Hike the bell back between legs. Explosive hip snap. Arms are a chain, hips do the work. Float at the top. Dead stop or Russian, your call.'},
   {name:'Pull-up',cues:'Kipping or strict. Break sets from round one — do not go to failure early. Chin over bar, full extension at bottom. Scale to jumping pull-ups when they degrade.'},
@@ -379,32 +400,60 @@ function iconFor(t){
  return '<div class="mv-icon ic-rest">—</div>';
 }
 
+function tmKey(day){return 'tm_'+day} // tested max storage
+function getTM(day){return data[tmKey(day)]?parseFloat(data[tmKey(day)]):null}
+function roundToLb(n){return Math.round(n/5)*5}
+
 function renderSession(){
  const c=document.getElementById('session-content');
  const day=DAYS.find(d=>d.key===currentDay);
- const li=(ROT[currentWeek]||ROT[1])[currentDay];
- const lift=LIFTS[currentDay][li];
+ const P=LIFTS[currentDay].primary;
+ const A=LIFTS[currentDay].accessory;
+ const bld=BUILD[currentWeek];
  const wod=WODS[currentWeek]?WODS[currentWeek][currentDay]:WODS[1][currentDay];
  const k=key(currentWeek,currentDay);
  const s=data[k]||{};
  const pct=['sat','sun','mon'].filter(d=>logged(currentWeek,d)).length/3*100;
+ const tm=getTM(currentDay);
+
+ // target weight calc
+ let targetLine='';
+ if(bld.pct && tm){
+   const tgt=roundToLb(tm*bld.pct);
+   targetLine='<div style="background:var(--purple-dim);border:1px solid var(--purple);border-radius:6px;padding:12px 14px;margin-top:10px"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:20px;font-weight:800;color:#C4B5FD">'+tgt+' lbs × '+bld.sets+'</div><div style="font-size:10px;color:var(--dim);margin-top:2px">'+(bld.pct*100)+'% of your '+tm+'lb tested max</div></div>';
+ } else if(bld.pct && !tm){
+   targetLine='<div style="background:var(--amber-dim);border:1px solid var(--amber);border-radius:6px;padding:12px 14px;margin-top:10px;font-size:11px;color:var(--amber)">⚠ No tested max yet. Go to Week 1 '+day.label+' and test your '+P.test+' first — then every week auto-calculates from it.</div>';
+ } else {
+   targetLine='<div style="background:var(--green-dim);border:1px solid var(--green);border-radius:6px;padding:12px 14px;margin-top:10px"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:18px;font-weight:700;color:var(--green)">'+bld.sets+'</div><div style="font-size:10px;color:var(--dim);margin-top:2px">'+bld.cue+'</div></div>';
+ }
 
  c.innerHTML=
  '<div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div>'+
 
- '<div class="section-label">Block 1 — Warm-Up · 5 min</div>'+
+ '<div class="section-label" style="display:flex;justify-content:space-between"><span>Block 1 — Warm-Up</span><span style="color:var(--purple)">'+bld.label+' WEEK</span></div>'+
  '<div class="card"><div class="card-header" onclick="tog(\'wu\')"><div class="card-title">Warm-Up</div><span class="badge badge-blue">5 min</span></div>'+
  '<div class="card-body" id="card-wu">'+WARMUP.map(w=>'<div class="mv-row"><div class="mv-icon ic-rest">·</div><div class="mv-text">'+w+'</div></div>').join('')+'</div></div>'+
 
- '<div class="section-label">Block 2 — Heavy Lift · '+day.sub+'</div>'+
- '<div class="card"><div class="card-header" onclick="tog(\'lift\')"><div class="card-title" style="color:'+day.color+'">'+lift.name+'</div><span class="badge badge-purple">'+lift.sets+'</span></div>'+
+ '<div class="section-label">Block 2 — Primary Lift · '+day.sub+'</div>'+
+ '<div class="card"><div class="card-header" onclick="tog(\'lift\')"><div class="card-title" style="color:'+day.color+'">'+P.name+'</div><span class="badge badge-purple">'+bld.label+'</span></div>'+
  '<div class="card-body" id="card-lift">'+
- '<div class="movement"><div class="movement-note">'+lift.note+'</div></div>'+
- '<div class="fields-2" style="margin-top:12px">'+
- '<div class="field"><div class="field-label">Weight</div><input type="number" id="lw" value="'+(s.liftWeight||'')+'" placeholder="lbs"></div>'+
- '<div class="field"><div class="field-label">Sets Done</div><input type="number" id="ls" value="'+(s.liftSets||'')+'" placeholder="'+lift.sets.split('x')[0]+'"></div></div>'+
- '<div class="field"><div class="field-label">Notes</div><input type="text" id="ln" value="'+(s.liftNotes||'')+'" placeholder="How it felt..."></div>'+
- '<div style="background:var(--green-dim);border:1px solid var(--green);border-radius:6px;padding:10px 12px;font-size:11px;color:var(--green)">↑ Add 5lbs next time if all sets completed clean.</div>'+
+ '<div style="font-size:11px;color:var(--dim);line-height:1.6;margin-bottom:4px">'+bld.cue+'</div>'+
+ targetLine+
+ '<div class="movement" style="margin-top:12px"><div class="movement-note">'+P.note+'</div></div>'+
+ (bld.pct?'':('<div class="field" style="margin-top:12px"><div class="field-label">Tested '+P.test+' (enter your heavy '+P.test.replace("RM","-rep")+' result)</div><input type="number" id="tmInput" value="'+(tm||'')+'" placeholder="lbs — saved for the whole block"></div>'))+
+ '<div class="fields-2" style="margin-top:8px">'+
+ '<div class="field"><div class="field-label">Weight Used</div><input type="number" id="lw" value="'+(s.liftWeight||'')+'" placeholder="lbs"></div>'+
+ '<div class="field"><div class="field-label">Top Set Reps</div><input type="number" id="ls" value="'+(s.liftSets||'')+'" placeholder="reps"></div></div>'+
+ '<div class="field"><div class="field-label">Notes</div><input type="text" id="ln" value="'+(s.liftNotes||'')+'" placeholder="How it moved..."></div>'+
+ '</div></div>'+
+
+ '<div class="section-label">Block 2b — Accessory</div>'+
+ '<div class="card"><div class="card-header" onclick="tog(\'acc\')"><div class="card-title" style="font-size:16px">'+A.name+'</div><span class="badge badge-green">'+A.scheme+'</span></div>'+
+ '<div class="card-body" id="card-acc">'+
+ '<div class="movement"><div class="movement-note">'+A.note+'</div></div>'+
+ '<div class="fields-2" style="margin-top:10px">'+
+ '<div class="field"><div class="field-label">Weight</div><input type="number" id="aw" value="'+(s.accWeight||'')+'" placeholder="lbs"></div>'+
+ '<div class="field"><div class="field-label">Done</div><input type="text" id="as" value="'+(s.accDone||'')+'" placeholder="'+A.scheme+'"></div></div>'+
  '</div></div>'+
 
  '<div class="section-label">Block 3 — WOD · '+wod.fmt+'</div>'+
@@ -433,15 +482,19 @@ function tog(id){const b=document.getElementById('card-'+id);if(b)b.classList.to
 
 function saveSession(){
  const k=key(currentWeek,currentDay);
- const li=(ROT[currentWeek]||ROT[1])[currentDay];
- const lift=LIFTS[currentDay][li];
+ const P=LIFTS[currentDay].primary;
+ const A=LIFTS[currentDay].accessory;
  const wod=WODS[currentWeek]?WODS[currentWeek][currentDay]:WODS[1][currentDay];
  const g=id=>{const e=document.getElementById(id);return e?e.value:''};
+ // persist tested max if the input exists (test weeks)
+ const tmIn=g('tmInput');
+ if(tmIn){data[tmKey(currentDay)]=tmIn;}
  data[k]={week:currentWeek,day:currentDay,date:new Date().toISOString().slice(0,10),
-  liftName:lift.name,liftWeight:g('lw'),liftSets:g('ls'),liftNotes:g('ln'),
+  liftName:P.name,liftWeight:g('lw'),liftSets:g('ls'),liftNotes:g('ln'),
+  accName:A.name,accWeight:g('aw'),accDone:g('as'),
   wodTitle:wod.title,wodScore:g('ws'),bikeCal:g('wc'),z2min:g('wz'),wodNotes:g('wn'),
   savedAt:new Date().toISOString()};
- save();stopTimer();timerSeconds=0;renderWeekBar();renderDayTabs();
+ save();stopTimer();timerSeconds=0;renderWeekBar();renderDayTabs();renderSession();
  toast('Week '+currentWeek+' '+currentDay.toUpperCase()+' saved ✓');
 }
 
